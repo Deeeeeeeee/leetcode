@@ -1,4 +1,4 @@
-package com.sealde.uf;
+package com.sealde.leetcode.uf;
 
 /**
  * @Author: sealde

@@ -1,4 +1,4 @@
-package com.sealde.stack;
+package com.sealde.leetcode.stack;
 
 import java.util.Stack;
 

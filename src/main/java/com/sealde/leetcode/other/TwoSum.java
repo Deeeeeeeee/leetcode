@@ -1,4 +1,4 @@
-package com.sealde.other;
+package com.sealde.leetcode.other;
 
 import java.util.*;
 
