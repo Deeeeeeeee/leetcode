@@ -1,12 +1,13 @@
 package com.sealde.basics.datastruct.stack;
 
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
  * @Author: sealde
  * @Date: 2020/2/3 下午5:30
  */
-public class ResizingArrayStack<T> {
+public class ResizingArrayStack<T> implements Iterable<T> {
     private int size;
     private T[] arr;
 
@@ -50,5 +51,30 @@ public class ResizingArrayStack<T> {
             copy[i] = this.arr[i];
         }
         this.arr = copy;
+    }
+
+    public Iterator<T> iterator() {
+        return new ReverseArrayIterator();
+    }
+
+    private class ReverseArrayIterator implements Iterator<T> {
+        private int i;
+
+        public ReverseArrayIterator() {
+            i = size-1;
+        }
+
+        public boolean hasNext() {
+            return i >= 0;
+        }
+
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+
+        public T next() {
+            if (!hasNext()) throw new NoSuchElementException();
+            return arr[i--];
+        }
     }
 }

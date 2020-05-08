@@ -59,7 +59,7 @@ public class ResizingArrayQueue<T> implements Iterable<T> {
     private void resize(int capacity) {
         Object[] copy = new Object[capacity];
         for (int i = 0; i < this.size; i++) {
-            copy[i] = this.arr[first+i];
+            copy[i] = this.arr[(first+i) % this.arr.length];
         }
         this.arr = copy;
         // 扩容之后，first和last需要修改
