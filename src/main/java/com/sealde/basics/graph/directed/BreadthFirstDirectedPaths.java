@@ -6,8 +6,8 @@ import com.sealde.basics.datastruct.stack.ResizingArrayStack;
 public class BreadthFirstDirectedPaths {
     private static final int INFINIT = Integer.MAX_VALUE;
     private boolean marked[];
-    private int edgeTo[];
-    private int distTo[];
+    private int edgeTo[];                                   // 表示已经走过的路径 last edge on shortest s->v path
+    private int distTo[];                                   // 表示距离 distTo[v] = length of shortest s->v path
 
     public BreadthFirstDirectedPaths(Digraph g, int s) {
         marked = new boolean[g.V()];
@@ -73,6 +73,9 @@ public class BreadthFirstDirectedPaths {
         return marked[v];
     }
 
+    /**
+     * s -> v 的距离
+     */
     public int distTo(int v) {
         validateVertex(v);
         return distTo[v];
