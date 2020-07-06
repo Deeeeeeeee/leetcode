@@ -2,9 +2,9 @@ package com.sealde.homework.graph.wordnet;
 
 import edu.princeton.cs.algs4.Bag;
 import edu.princeton.cs.algs4.Digraph;
+import edu.princeton.cs.algs4.DirectedCycle;
 import edu.princeton.cs.algs4.In;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -22,7 +22,7 @@ public class WordNet {
         }
 
         int count = 0;
-        In sIn = new In(new File(synsets));
+        In sIn = new In(synsets);
         while (sIn.hasNextLine()) {
             String[] split = sIn.readLine().split(",");
             Integer index = Integer.parseInt(split[0]);
@@ -43,11 +43,19 @@ public class WordNet {
         Digraph g = new Digraph(count);
         sIn.close();
 
-        In hIn = new In(new File(hypernyms));
+        DirectedCycle dc = new DirectedCycle(g);
+        if (dc.hasCycle()) {
+            throw new IllegalArgumentException();
+        }
+        boolean[] isNotRoot = new boolean[count];
+        int rootNumber = 0;
+
+        In hIn = new In(hypernyms);
         while (hIn.hasNextLine()) {
             String line = hIn.readLine();
             String[] split = line.split(",");
             int v = Integer.parseInt(split[0]);
+            isNotRoot[v] = true;
             for (int i = 1; i < split.length; i++) {
                 int w = Integer.parseInt(split[i]);
                 g.addEdge(v, w);
@@ -55,6 +63,14 @@ public class WordNet {
         }
         hIn.close();
 
+        for (boolean b : isNotRoot) {
+            if (!b) {
+                rootNumber++;
+            }
+        }
+        if (rootNumber > 1) {
+            throw new IllegalArgumentException();
+        }
         sap = new SAP(g);
     }
 
@@ -65,6 +81,9 @@ public class WordNet {
 
     // is the word a WordNet noun?
     public boolean isNoun(String word) {
+        if (word == null) {
+            throw new IllegalArgumentException();
+        }
         return wordIds.containsKey(word);
     }
 
