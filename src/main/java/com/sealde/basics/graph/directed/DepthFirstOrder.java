@@ -2,6 +2,8 @@ package com.sealde.basics.graph.directed;
 
 import com.sealde.basics.datastruct.queue.ResizingArrayQueue;
 import com.sealde.basics.datastruct.stack.ResizingArrayStack;
+import com.sealde.basics.graph.shortestpath.DirectedEdge;
+import com.sealde.basics.graph.shortestpath.EdgeWeightedDigraph;
 
 public class DepthFirstOrder {
     private boolean[] marked;
@@ -23,11 +25,39 @@ public class DepthFirstOrder {
         }
     }
 
+    public DepthFirstOrder(EdgeWeightedDigraph G) {
+        marked = new boolean[G.V()];
+        pre = new int[G.V()];
+        post = new int[G.V()];
+        preOrder = new ResizingArrayQueue<>();
+        postOrder = new ResizingArrayQueue<>();
+        for (int v = 0; v < G.V(); v++) {
+            dfs(G, v);
+        }
+    }
+
+    /**
+     * 深度遍历，先将标记位置为 true； preOrder 记录正常顺序；postOrder 记录倒序
+     */
     private void dfs(Digraph G, int v) {
         marked[v] = true;
         pre[v] = preCount++;
         preOrder.enqueue(v);
         for (int w : G.adj(v)) {
+            if (!marked[w]) {
+                dfs(G, w);
+            }
+        }
+        post[v] = postCount++;
+        postOrder.enqueue(v);
+    }
+
+    private void dfs(EdgeWeightedDigraph G, int v) {
+        marked[v] = true;
+        pre[v] = preCount++;
+        preOrder.enqueue(v);
+        for (DirectedEdge e : G.adj(v)) {
+            int w = e.to();
             if (!marked[w]) {
                 dfs(G, w);
             }
