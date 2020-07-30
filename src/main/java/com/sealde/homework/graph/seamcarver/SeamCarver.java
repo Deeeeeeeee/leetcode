@@ -114,10 +114,10 @@ public class SeamCarver {
     // sequence of indices for vertical seam, 垂直线
     public int[] findVerticalSeam() {
         int[] result = new int[height];
-        double[][] disTo = new double[width+1][height+1];
-        int[][] edges = new int[width+1][height+1];
+        double[][] disTo = new double[width][height+1];
+        int[][] edges = new int[width][height+1];
         for (int i = 0; i < width; i++) {
-            relax(i, 0, width, height, disTo, edges);
+            relax(i, 0, 0, height, disTo, edges);
         }
         int t = edges[0][height];
         for (int i = height-1; i >= 0; i--) {
@@ -129,19 +129,12 @@ public class SeamCarver {
     }
 
     private void relax(int xTo, int yTo, int xFrom, int yFrom, double[][] disTo, int[][] edges) {
-        double w = 0.0;
-        if (yTo != height) {
-            w = energy(xTo, yTo);
-        }
+        double w = energy(xTo, yTo);
         if (disTo[xTo][yTo] == 0 || disTo[xTo][yTo] > disTo[xFrom][yFrom] + w) {
             disTo[xTo][yTo] = disTo[xFrom][yFrom] + w;
             edges[xTo][yTo] = xFrom+yFrom*width;
             // 依次中、左、右
             if (yTo == height-1) {
-                relax(0, height, xTo, yTo, disTo, edges);
-                return;
-            }
-            if (yTo == height) {
                 return;
             }
             relax(xTo, yTo+1, xTo, yTo, disTo, edges);
@@ -247,10 +240,10 @@ public class SeamCarver {
             StdOut.print(x + " ");
         StdOut.println("}");
 
-        StdOut.printf("Horizontal seam: { ");
-        int[] horizontalSeam = carver.findHorizontalSeam();
-        for (int y : horizontalSeam)
-            StdOut.print(y + " ");
-        StdOut.println("}");
+//        StdOut.printf("Horizontal seam: { ");
+//        int[] horizontalSeam = carver.findHorizontalSeam();
+//        for (int y : horizontalSeam)
+//            StdOut.print(y + " ");
+//        StdOut.println("}");
     }
 }
