@@ -114,35 +114,47 @@ public class SeamCarver {
     // sequence of indices for vertical seam, 垂直线
     public int[] findVerticalSeam() {
         int[] result = new int[height];
-        double[][] disTo = new double[width][height+1];
-        int[][] edges = new int[width][height+1];
-        for (int i = 0; i < width; i++) {
-            relax(i, 0, 0, height, disTo, edges);
+        double[][] disTo = new double[width][height];
+        int[][] edges = new int[width][height];
+        // 与拓补排序的遍历类似
+        for (int j = 0; j < height; j++) {
+            for (int i = 0; i < width; i++) {
+                relax(i, j, disTo, edges);
+            }
         }
-        int t = edges[0][height];
+        // 获取最小值
+        double win = Double.MAX_VALUE;
+        int t = 0;
+        for (int i = 0; i < width; i++) {
+            if (disTo[i][height-1] < win) {
+                win = disTo[i][height-1];
+                t = edges[i][height-1];
+            }
+        }
+        // 获取最短路径
         for (int i = height-1; i >= 0; i--) {
-            int x = t - i*width;
+            int x = t % width;
             result[i] = x;
             t = edges[x][i];
         }
         return result;
     }
 
-    private void relax(int xTo, int yTo, int xFrom, int yFrom, double[][] disTo, int[][] edges) {
-        double w = energy(xTo, yTo);
-        if (disTo[xTo][yTo] == 0 || disTo[xTo][yTo] > disTo[xFrom][yFrom] + w) {
-            disTo[xTo][yTo] = disTo[xFrom][yFrom] + w;
-            edges[xTo][yTo] = xFrom+yFrom*width;
-            // 依次中、左、右
-            if (yTo == height-1) {
-                return;
-            }
-            relax(xTo, yTo+1, xTo, yTo, disTo, edges);
-            if (xTo > 0) {
-                relax(xTo - 1, yTo+1, xTo, yTo, disTo, edges);
-            }
-            if (xTo < width-1) {
-                relax(xTo + 1, yTo+1, xTo, yTo, disTo, edges);
+    private void relax(int x, int y, double[][] disTo, int[][] edges) {
+        double w = energy(x, y);
+        if (y == 0) {
+            disTo[x][y] = w;
+            edges[x][y] = x;
+        } else {
+            // 左上，中上，右上
+            for (int px = x-1, py = y-1; px <= x+1; px++) {
+                if (px < 0 || px >= width) {
+                    continue;
+                }
+                if (disTo[x][y] == 0 || disTo[x][y] > disTo[px][py] + w) {
+                    disTo[x][y] = disTo[px][py] + w;
+                    edges[x][y] = px+py*width;
+                }
             }
         }
     }
@@ -202,29 +214,6 @@ public class SeamCarver {
     }
 
     public static void main(String[] args) {
-//        Picture p = new Picture(args[0]);
-//        SeamCarver sc = new SeamCarver(p);
-//        for (int row = 0; row < sc.height(); row++) {
-//            for (int col = 0; col < sc.width(); col++)
-//                StdOut.printf("%9d ", p.get(col, row).getRGB());
-//            StdOut.println();
-//        }
-////        for (int row = 0; row < sc.height(); row++) {
-////            for (int col = 0; col < sc.width(); col++)
-////                StdOut.printf("%9.0f ", sc.energy(col, row));
-////            StdOut.println();
-////        }
-//        sc.removeVerticalSeam(sc.findVerticalSeam());
-////        for (int row = 0; row < sc.height(); row++) {
-////            for (int col = 0; col < sc.width(); col++)
-////                StdOut.printf("%9.0f ", sc.energy(col, row));
-////            StdOut.println();
-////        }
-//        for (int row = 0; row < sc.height(); row++) {
-//            for (int col = 0; col < sc.width(); col++)
-//                StdOut.printf("%9d ", sc.picture().get(col, row).getRGB());
-//            StdOut.println();
-//        }
         Picture picture = new Picture(args[0]);
         StdOut.printf("%s (%d-by-%d image)\n", args[0], picture.width(), picture.height());
         StdOut.println();
@@ -240,10 +229,10 @@ public class SeamCarver {
             StdOut.print(x + " ");
         StdOut.println("}");
 
-//        StdOut.printf("Horizontal seam: { ");
-//        int[] horizontalSeam = carver.findHorizontalSeam();
-//        for (int y : horizontalSeam)
-//            StdOut.print(y + " ");
-//        StdOut.println("}");
+        StdOut.printf("Horizontal seam: { ");
+        int[] horizontalSeam = carver.findHorizontalSeam();
+        for (int y : horizontalSeam)
+            StdOut.print(y + " ");
+        StdOut.println("}");
     }
 }
