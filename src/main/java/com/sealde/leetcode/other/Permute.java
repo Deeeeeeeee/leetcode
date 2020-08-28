@@ -1,6 +1,7 @@
 package com.sealde.leetcode.other;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * #46. 全排列
@@ -26,8 +27,35 @@ import java.util.List;
  */
 public class Permute {
     public List<List<Integer>> permute(int[] nums) {
-
+        List<List<Integer>> result = new ArrayList<>();
+        int len = nums.length;
+        for (int i = 0; i < len; i++) {
+            int[] container = new int[len];
+            container[i] = 1;
+            cal(i+1, len, container, result);
+        }
+        return result;
     }
 
-    private 
+    private int cal(int row, int len, int[] container, List<List<Integer>> result) {
+        if (row == len) {
+            result.add(Arrays.stream(container).boxed().collect(Collectors.toList()));
+            return container[len-1];
+        }
+        int r = 0;
+        for (int col = 0; col < len; col++) {
+            if (container[col] == 0) {
+                container[col] = row + 1;
+                r = cal(row + 1, len, container, result);
+                container[r-1] = 0;
+            }
+        }
+        return r - 1;
+    }
+
+    public static void main(String[] args) {
+        Permute p = new Permute();
+        int[] s = new int[] {1, 2, 3, 4};
+        System.out.println(p.permute(s));
+    }
 }
