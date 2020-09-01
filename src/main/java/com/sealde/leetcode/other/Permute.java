@@ -27,30 +27,26 @@ import java.util.stream.Collectors;
  */
 public class Permute {
     public List<List<Integer>> permute(int[] nums) {
-        List<List<Integer>> result = new ArrayList<>();
-        int len = nums.length;
-        for (int i = 0; i < len; i++) {
-            int[] container = new int[len];
-            container[i] = 1;
-            cal(i+1, len, container, result);
+        List<List<Integer>> result = new LinkedList<>();
+        List<Integer> container = new ArrayList<>();
+        for (int i : nums) {
+            container.add(i);
         }
+
+        cal(0, nums.length, container, result);
         return result;
     }
 
-    private int cal(int row, int len, int[] container, List<List<Integer>> result) {
-        if (row == len) {
-            result.add(Arrays.stream(container).boxed().collect(Collectors.toList()));
-            return container[len-1];
+    private void cal(int first, int len, List<Integer> container, List<List<Integer>> result) {
+        if (first == len) {
+            result.add(new ArrayList<>(container));
         }
-        int r = 0;
-        for (int col = 0; col < len; col++) {
-            if (container[col] == 0) {
-                container[col] = row + 1;
-                r = cal(row + 1, len, container, result);
-                container[r-1] = 0;
-            }
+        for (int i = first; i < len; i++) {
+            Collections.swap(container, i, first);
+            cal(first+1, len, container, result);
+            // 回溯
+            Collections.swap(container, first, i);
         }
-        return r - 1;
     }
 
     public static void main(String[] args) {
