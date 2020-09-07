@@ -27,13 +27,22 @@ package com.sealde.leetcode.other;
  */
 public class Reverse {
     public int reverse(int x) {
-        int result = 0;
-        while (x & ())
-        return result;
+        long result = 0;
+        // n = x % 10; m = n*10+n; x /= 10;
+        // 正数时 x > 0; 负数时 x < 0
+        while (x != 0) {
+            result = result*10 + x%10;
+            x /= 10;
+            if ((int) result != result) {
+                return 0;
+            }
+        }
+        return (int) result;
     }
 
     public static void main(String[] args) {
         Reverse r = new Reverse();
-        System.out.println(r.reverse(-123));
+        System.out.println(r.reverse(1534236469));
+//        System.out.println((-9)%10);
     }
 }
