@@ -1,17 +1,50 @@
 package com.sealde.homework.graph.baseball;
 
+import edu.princeton.cs.algs4.FlowNetwork;
+import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class BaseballElimination {
+    private final List<String> names;
+    private final int[][] teams;
+    private final int[][] matches;
+    private final int num;
+
     public BaseballElimination(String filename) {                   // create a baseball division from given filename in format specified below
+        In input = new In(filename);
+        int num = input.readInt();
+        input.readLine();
+        this.num = num;
+        names = new ArrayList<>(num);
+        teams = new int[num][3];
+        matches = new int[num][num];
+        for (int i = 0; i < num; i++) {
+            String line = input.readLine();
+            String[] items = line.trim().split("\\s+");
+            names.add(items[0]);                                // 队名
+            teams[i] = new int[] {
+                    Integer.parseInt(items[1]),                 // wins 已经赢的场数
+                    Integer.parseInt(items[2]),                 // loss 已经输的场数
+                    Integer.parseInt(items[3])};                // left 剩余的场数
+            for (int j = 0; j < num; j++) {
+                matches[i][j] = Integer.parseInt(items[4+j]);
+            }
+        }
+    }
+
+    private void drawNetwork(int s) {
+        FlowNetwork network = new FlowNetwork(num);
     }
 
     public              int numberOfTeams() {                       // number of teams
-        return 0;
+        return num;
     }
 
     public Iterable<String> teams() {                               // all teams
-        return null;
+        return names;
     }
 
     public              int wins(String team) {                     // number of wins for given team
