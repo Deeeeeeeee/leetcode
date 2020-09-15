@@ -52,7 +52,6 @@ public class MSD {
             count[c+2]++;
         }
 
-
         // 2. 累加 count 数据（）
         for (int r = 0; r < R+1; r++)
             count[r+1] += count[r];
@@ -67,12 +66,34 @@ public class MSD {
         for (int i = lo; i <= hi; i++)
             a[i] = aux[i - lo];
 
-        // 遍历
+        // 遍历. 除了 count[-1]，-1 表示多余的结束标记，不需要递归
         for (int r = 0; r < R; r++)
             sort(a, lo + count[r], lo + count[r+1] - 1, d+1, aux);
     }
 
     private static void insertion(String[] a, int lo, int hi, int d) {
+        for (int i = lo + 1; i <= hi; i++)
+            for (int j = i; j > lo && less(a[j], a[j-1], d); j--)
+                exch(a, j, j-1);
+    }
 
+    // 直接比较两个字符串，从第 d 个字符开始比较
+//    private static boolean less(String v, String w, int d) {
+//        for (int i = d; i < Math.min(v.length(), w.length()); i++) {
+//            if (v.charAt(i) < w.charAt(i)) return true;
+//            if (v.charAt(i) > w.charAt(i)) return false;
+//        }
+//        return v.length() < w.length();
+//    }
+
+    // 直接比较两个字符串，从第 d 个字符开始比较
+    private static boolean less(String v, String w, int d) {
+        return v.substring(d).compareTo(w.substring(d)) < 0;
+    }
+
+    private static void exch(String[] a, int i, int j) {
+        String temp = a[i];
+        a[i] = a[j];
+        a[j] = temp;
     }
 }
