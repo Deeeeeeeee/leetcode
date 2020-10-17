@@ -1,11 +1,14 @@
 package com.sealde.homework.string.boggle;
 
-import com.sealde.basics.string.tries.TrieST;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
-import edu.princeton.cs.algs4.TrieSET;
 
-import java.util.*;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Arrays;
+import java.util.ArrayList;
+
 
 public class BoggleSolver {
     private final Trie trie = new Trie();
@@ -13,19 +16,14 @@ public class BoggleSolver {
     // Initializes the data structure using the given array of strings as the dictionary.
     // (You can assume each word in the dictionary contains only the uppercase letters A through Z.)
     public BoggleSolver(String[] dictionary) {
-        for (String pwd : dictionary) {
-            if (pwd.length() >= 3) {
-                if (pwd.equals("AID")) {
-                    System.out.println();
-                }
+        for (String pwd : dictionary)
+            if (pwd.length() >= 3)
                 trie.add(pwd.toUpperCase());
-            }
-        }
     }
 
     // Returns the set of all valid words in the given Boggle board, as an Iterable.
     public Iterable<String> getAllValidWords(BoggleBoard board) {
-        HashSet<String> result = new HashSet<>();
+        Set<String> result = new HashSet<>();
         int row = board.rows();
         int col = board.cols();
         for (int i = 0; i < row; i++) {
@@ -42,16 +40,19 @@ public class BoggleSolver {
         if (marked[i][j]) return;
         marked[i][j] = true;
 
-        sb.append(board.getLetter(i, j));
+        char letter = board.getLetter(i, j);
+        if (letter == 'Q') sb.append("QU");
+        else sb.append(letter);
+
         Trie.Node node = trie.getNode(sb.toString());
         if (node == null) {
             marked[i][j] = false;
-            sb.deleteCharAt(sb.length() - 1);
+            if (letter == 'Q') sb.setLength(sb.length() - 2);
+            else sb.setLength(sb.length() - 1);
             return;
         }
         // 如果找到，加到结果里面
         if (node.isString) result.add(sb.toString());
-
 
         for (List<Integer> next : adj(i, j, marked.length, marked[0].length)) {
             int nextI = next.get(0);
@@ -60,24 +61,16 @@ public class BoggleSolver {
         }
         // 回溯
         marked[i][j] = false;
-        sb.deleteCharAt(sb.length() - 1);
+        if (letter == 'Q') sb.setLength(sb.length() - 2);
+        else sb.setLength(sb.length() - 1);
     }
 
     // 拿到 i,j 相邻的点
     private List<List<Integer>> adj(int i, int j, int row, int col) {
         List<List<Integer>> result = new ArrayList<>();
-        if (i > 0) {
-            result.add(Arrays.asList(i-1, j));
-            if (j > 0) result.add(Arrays.asList(i-1, j-1));
-            if (j < col-1) result.add(Arrays.asList(i-1, j+1));
-        }
-        if (j > 0) result.add(Arrays.asList(i, j-1));
-        if (j < col-1) result.add(Arrays.asList(i, j+1));
-        if (i < row-1) {
-            result.add(Arrays.asList(i+1, j));
-            if (j > 0) result.add(Arrays.asList(i+1, j-1));
-            if (j < col-1) result.add(Arrays.asList(i+1, j+1));
-        }
+        for (int m = i - 1; m <= i + 1; m++)
+            for (int n = j - 1; n <= j + 1; n++)
+                if (m >= 0 && m < row && n >= 0 && n < col) result.add(Arrays.asList(m, n));
         return result;
     }
 
@@ -85,6 +78,7 @@ public class BoggleSolver {
     // (You can assume the word contains only the uppercase letters A through Z.)
     public int scoreOf(String word) {
         if (word == null) throw new IllegalArgumentException();
+        if (!trie.contains(word)) return 0;
         int n = word.length();
         if (n == 3 || n == 4) return 1;
         else if (n == 5) return 2;
@@ -123,6 +117,11 @@ public class BoggleSolver {
                 x.next[c] = add(x.next[c], key, d + 1);
             }
             return x;
+        }
+
+        public boolean contains(String key) {
+            Node node = getNode(key);
+            return node != null && node.isString;
         }
 
         public Node getNode(String prefix) {
