@@ -6,6 +6,8 @@ import edu.princeton.cs.algs4.BinaryStdOut;
 import java.util.Arrays;
 
 public class BurrowsWheeler {
+    private final static int R = 256;
+
     // apply Burrows-Wheeler transform,
     // reading from standard input and writing to standard output
     public static void transform() {
@@ -32,22 +34,22 @@ public class BurrowsWheeler {
     public static void inverseTransform() {
         int first = BinaryStdIn.readInt();
         String s = BinaryStdIn.readString();
-        CircularSuffixArray csa = new CircularSuffixArray(s);
-        int length = csa.length();
-        int[] next = new int[length];
-        char tmp = s.charAt(csa.index(0));
-        // 初始化 next
-        for (int i = 0, count = 0; i < length; i++) {
-            next[i] = csa.index(i);
-            char c = s.charAt(next[i]);
-            if (tmp != c || i == length-1) {
-                tmp = c;
-                Arrays.sort(next, i-count, i == length-1 ? i+1 : i);
-                count = 1;
-            } else count++;
-        }
+        int[] next = new int[s.length()];
+        // key-indexing 排序
+        int[] count = new int[R+1];
+        for (int i = 0; i < s.length(); i++)
+            count[s.charAt(i) + 1]++;
+
+        // 累计
+        for (int r = 0; r < R; r++)
+            count[r+1] += count[r];
+
+        // 构建next
+        for (int i = 0; i < s.length(); i++)
+            next[count[s.charAt(i)]++] = i;
+
         // 输出
-        for (int i = 0, j = first; i < length; i++, j = next[j])
+        for (int i = 0, j = first; i < s.length(); i++, j = next[j])
             BinaryStdOut.write(s.charAt(next[j]));
         BinaryStdOut.close();
     }
