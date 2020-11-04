@@ -16,7 +16,7 @@ import java.util.Arrays;
 public class CircularSuffixArray {
     private final String source;
     private final int length;
-    private CircularSuffix[] suffix;
+    private final CircularSuffix[] suffix;
 
     // circular suffix array of s
     public CircularSuffixArray(String s) {
@@ -44,7 +44,7 @@ public class CircularSuffixArray {
     }
 
     private class CircularSuffix implements Comparable<CircularSuffix> {
-        private int startIndex;
+        private final int startIndex;
 
         public CircularSuffix(int startIndex) {
             this.startIndex = startIndex;
